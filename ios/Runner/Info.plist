@@ -5,7 +5,7 @@
 		<key>CFBundleDevelopmentRegion</key>
 		<string>$(DEVELOPMENT_LANGUAGE)</string>
 		<key>CFBundleDisplayName</key>
-		<string>Vivoo Camera Cty</string>
+		<string>Vivoo</string>
 		<key>CFBundleExecutable</key>
 		<string>$(EXECUTABLE_NAME)</string>
 		<key>CFBundleIdentifier</key>
@@ -47,5 +47,50 @@
 		<true/>
 		<key>UIStatusBarHidden</key>
 		<false/>
+		
+		<!-- Background modes -->
+		<key>UIBackgroundModes</key>
+		<array>
+			<string>audio</string>
+			<string>fetch</string>
+			<string>location</string>
+			<string>remote-notification</string>
+		</array>
+
+		<!-- Permissions -->
+		<key>NSCameraUsageDescription</key>
+		<string>Your app needs access to the camera for...</string>
+		<key>NSMicrophoneUsageDescription</key>
+		<string>Your app needs access to the microphone for...</string>
+		<key>NSLocationWhenInUseUsageDescription</key>
+		<string>Your app needs access to location when in use for...</string>
+		<key>NSLocationAlwaysUsageDescription</key>
+		<string>Your app needs access to location at all times for...</string>
+		<key>NSPhotoLibraryUsageDescription</key>
+		<string>Your app needs access to your photo library for...</string>
+		<key>NSAppleMusicUsageDescription</key>
+		<string>Your app needs access to Apple Music for...</string>
+		<key>NSBluetoothAlwaysUsageDescription</key>
+		<string>Your app needs access to Bluetooth for...</string>
+		<key>NSBluetoothPeripheralUsageDescription</key>
+		<string>Your app needs access to Bluetooth peripherals for...</string>
+
+		<!-- Firebase Push Notifications -->
+		<key>FirebaseAppDelegateProxyEnabled</key>
+		<false/>
+		<key>com.google.firebase.messaging.auto_init_enabled</key>
+		<true/>
+		<key>com.google.firebase.messaging.default_notification_icon</key>
+		<string>notification_icon</string>
+		<key>com.google.firebase.messaging.default_notification_channel_id</key>
+		<string>channel_id_vivoo_1</string>
+
+		<!-- App Transport Security Settings -->
+		<key>NSAppTransportSecurity</key>
+		<dict>
+			<key>NSAllowsArbitraryLoads</key>
+			<true/>
+		</dict>
+
 	</dict>
 </plist>
