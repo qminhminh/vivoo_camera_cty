@@ -78,6 +78,22 @@ dependencies:
   rive: ^0.13.20
   loading_animation_widget: ^1.3.0
 
+
+flutter_native_splash:
+  color: "#ffffff"
+  image: assets/logo/Logo _circle.png
+  branding: assets/logo/Logo.png
+  branding_bottom_padding: 24
+  branding_ios: assets/logo/Logo.png
+  android: true
+  ios: true
+  android_12:
+    color: "#ffffff"
+    icon_background_color: "#ffffff"
+    image: assets/logo/Logo _circle.png
+    branding: assets/logo/Logo.png
+
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
