@@ -1,125 +1,161 @@
-import 'package:flutter/material.dart';
+// ignore_for_file: prefer_const_constructors, unused_shown_name, unused_import, prefer_const_literals_to_create_immutables, avoid_print, deprecated_member_use
 
-void main() {
-  runApp(const MyApp());
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:device_preview/device_preview.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:vivoo_camera_cty/constants/constants.dart';
+import 'package:vivoo_camera_cty/controllers/dependency_injection.dart';
+import 'package:vivoo_camera_cty/controllers/home_controller.dart';
+import 'package:vivoo_camera_cty/controllers/login_controller.dart';
+import 'package:vivoo_camera_cty/controllers/tab_controller.dart';
+import 'package:vivoo_camera_cty/firebase_options.dart';
+import 'package:vivoo_camera_cty/models/environment.dart';
+import 'package:vivoo_camera_cty/models/login_request.dart';
+import 'package:flutter/foundation.dart'
+    show debugDefaultTargetPlatformOverride, kReleaseMode;
+import 'package:flutter_webrtc/flutter_webrtc.dart';
+import 'package:vivoo_camera_cty/services/notification_service.dart';
+import 'package:vivoo_camera_cty/views/auth/login_page.dart';
+import 'package:vivoo_camera_cty/views/camera/camera_page.dart';
+import 'package:vivoo_camera_cty/views/check_internet.dart/no_connect_page.dart';
+import 'package:vivoo_camera_cty/views/main/main_page.dart';
+import 'package:vivoo_camera_cty/views/profile/notification_settings.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:firebase_core/firebase_core.dart';
+
+Future<dynamic> myBackgroundMessageHandler(RemoteMessage message) async {
+  print(
+      "onBackground: ${message.notification?.title}/${message.notification?.body}/${message.notification?.titleLocKey}");
 }
 
-class MyApp extends StatelessWidget {
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
+
+Widget defaultHome = MainScreen();
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  if (WebRTC.platformIsDesktop) {
+    debugDefaultTargetPlatformOverride = TargetPlatform.fuchsia;
+  }
+  await dotenv.load(fileName: Environment.fileName);
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  await GetStorage.init();
+  await NotificationService().initialize(flutterLocalNotificationsPlugin);
+
+  // runApp(
+  //   DevicePreview(
+  //     enabled: !kReleaseMode,
+  //     builder: (context) => MyApp(), // Wrap your app
+  //   ),
+  // );
+
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
+      .then((value) => runApp(MyApp()));
+  DependencyInjection.init();
+}
+
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+    requestPermissions(); // Yêu cầu quyền khi ứng dụng khởi chạy
+    //  _checkConnectivity(); // Kiểm tra kết nối mạng
+    // Lắng nghe sự thay đổi kết nối mạng
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp, // Dọc thông thường
+      DeviceOrientation.portraitDown, // Dọc ngược
+    ]);
   }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
+  void dispose() {
+    // Khôi phục chế độ quay màn hình khi thoát khỏi ứng dụng
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+    super.dispose();
+  }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  Future<void> requestPermissions() async {
+    if (await Permission.camera.isDenied ||
+        await Permission.camera.isPermanentlyDenied) {
+      await Permission.camera.request();
+    }
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+    if (await Permission.microphone.isDenied ||
+        await Permission.microphone.isPermanentlyDenied) {
+      await Permission.microphone.request();
+    }
+
+    if (await Permission.storage.isDenied ||
+        await Permission.storage.isPermanentlyDenied) {
+      await Permission.storage.request();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.leanBack);
+    final box = GetStorage();
+    final controller = Get.put(LoginController());
+
+    String? username = box.read('username');
+    String? password = box.read('password');
+    if (username == null || password == null) {
+      // defaultHome = LoginPage();
+    } else {
+      LoginRequest model = LoginRequest(username: username, password: password);
+
+      String authData = loginRequestToJson(model);
+
+      controller.loginFuncStart(authData);
+      //  defaultHome = MainScreen();
+    }
+
+    return ScreenUtilInit(
+      useInheritedMediaQuery: true,
+      designSize: const Size(375, 825),
+      minTextAdapt: true,
+      splitScreenMode: true,
+      builder: (context, child) {
+        return GetMaterialApp(
+          debugShowCheckedModeBanner: false,
+          // locale: DevicePreview.locale(context),
+          // builder: DevicePreview.appBuilder,
+          title: 'Vivoo',
+          theme: ThemeData(
+            scaffoldBackgroundColor: Color(kOffWhite.value),
+            iconTheme: IconThemeData(color: Color(kDark.value)),
+            primarySwatch: Colors.grey,
+          ),
+          home:
+              username != null && password != null ? MainScreen() : LoginPage(),
+          navigatorKey: navigatorKey,
+          routes: {
+            '/order_details_page': (context) => CameraPage(
+                  idcamera: '',
+                  label: '',
+                ),
+          },
+        );
+      },
     );
   }
 }

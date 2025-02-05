@@ -1,0 +1,67 @@
+{
+  "project_info": {
+    "project_number": "353641736892",
+    "project_id": "epcam-af4d6",
+    "storage_bucket": "epcam-af4d6.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:353641736892:android:9dda17ca185c90adb5feb9",
+        "android_client_info": {
+          "package_name": "com.epcb.epcam"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAIb2If1O32F5zCRqkrqHiTCbSuZB-O104"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:353641736892:android:b6ee0fe11ecc0c7fb5feb9",
+        "android_client_info": {
+          "package_name": "com.example.main_camera_cty"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAIb2If1O32F5zCRqkrqHiTCbSuZB-O104"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:353641736892:android:abe8a04ada66b6ceb5feb9",
+        "android_client_info": {
+          "package_name": "com.example.vivoo_camera_cty"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAIb2If1O32F5zCRqkrqHiTCbSuZB-O104"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

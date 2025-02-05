@@ -65,7 +65,7 @@ dependencies:
   dio: ^5.7.0
   image_gallery_saver_plus: ^3.0.5
   open_file: ^3.5.10
-  chewie: ^1.8.5
+  chewie: ^1.10.0
   flutter_datetime_picker: ^1.5.1
   firebase_messaging: ^15.1.6
   flutter_local_notifications: ^18.0.1
